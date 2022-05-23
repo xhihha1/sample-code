@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <head></head>
+    <body>
+        <button id="start">click</button>
+    </body>
+    <script>
+        const AudioContext = window.AudioContext || window.webkitAudioContext // 跨瀏覽器
+        const context = new AudioContext()
+        document.getElementById('start').addEventListener("click",function(){
+            var oscillator1 = context.createOscillator();
+            oscillator1.type = "square";
+            oscillator1.frequency.value = 440;
+            oscillator1.detune.value = -400;
+            oscillator1.connect(context.destination);
+            oscillator1.start(context.currentTime+0);
+            oscillator1.stop(context.currentTime+1);
+            // oscillator1.onended = function(){alert('stop');};
+
+            var oscillator2 = context.createOscillator();
+            oscillator2.type = "square";
+            oscillator2.frequency.value = 440;
+            oscillator2.detune.value = 300;
+            gainNode = context.createGain();  // 創建 gainNode
+            gainNode.gain.value = 0.3;        // 設定音量
+            oscillator2.connect(gainNode);    // 將聲音連到 gainNode 
+            gainNode.connect(context.destination); // 播放 gainNode
+            oscillator2.start(context.currentTime+2);
+            oscillator2.stop(context.currentTime+3);
+
+            // var oscillator3 = context.createOscillator();
+            // oscillator3.type = "square";
+            // oscillator3.frequency.value = 440;
+            // oscillator3.detune.value = 300;
+            // oscillator3.connect(context.destination);
+            // oscillator3.start();
+            // oscillator3.stop(2);
+        });
+        
+
+        
+    </script>
+</html>

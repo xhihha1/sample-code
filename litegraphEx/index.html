@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="./lib/litegraph.css">
+    <script type="text/javascript" src="./lib/litegraph.js"></script>
+    <script type="text/javascript" src="node.js"></script>
+    <script type="text/javascript" src="./lib/audiosynth.js"></script>
+    <style>
+        html, body{
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #main {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 100px);
+            display: flex;
+        }
+        #alitegraph{
+            position: relative;
+            width: 70%;
+            height: 100%;
+            background-color: brown;
+        }
+        #alitegraph > canvas {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border: 1px solid #FFFFFF;
+        }
+        #propertyArea{
+            position: relative;
+            width: 30%;
+        }
+    </style>
+</head>
+
+<body style='width:100%; height:100%'>
+    <!-- <div class="litegraph">
+        <canvas id='mycanvas' width='1024' height='720' style='border: 1px solid'></canvas>
+    </div> -->
+    <div>
+        <button id="save">save</button>
+        <button id="load">load</button>
+        <button id="start">start</button>
+        <button id="stop">stop</button>
+        <button id="step">step</button>
+        <button id="step1">step1</button>
+    </div>
+    <div id="main">
+        <div id="alitegraph" class="litegraph">
+            <canvas id='mycanvas'></canvas>
+        </div>
+        <div id="propertyArea" class="litegraph"></div>
+    </div>
+    
+    <!-- <div id="node-panel"></div> -->
+    
+    
+    <script>
+        // setTimeout(function(){
+            var graph = new LGraph();
+
+            var canvas = new LGraphCanvas("#mycanvas", graph);
+
+            var node_const = LiteGraph.createNode("basic/const");
+            node_const.pos = [200, 200];
+            graph.add(node_const);
+            node_const.setValue(4.5);
+
+            var node_watch = LiteGraph.createNode("basic/watch");
+            node_watch.pos = [700, 200];
+            graph.add(node_watch);
+
+            node_const.connect(0, node_watch, 0);
+
+            graph.start()
+            canvas.resize ()
+        // },1000)
+
+        document.getElementById('save').addEventListener("click",function(){
+            localStorage.setItem( "graphdemo_save", JSON.stringify( graph.serialize() ) );
+        });
+        document.getElementById('load').addEventListener("click",function(){
+            var data = localStorage.getItem( "graphdemo_save" );
+            if(data)
+                graph.configure( JSON.parse( data ) );
+        });
+        document.getElementById('start').addEventListener("click",function(){
+            graph.start();
+        });
+        document.getElementById('stop').addEventListener("click",function(){
+            graph.stop();
+        });
+        document.getElementById('step').addEventListener("click",function(){
+            graph.runStep(1);
+            canvas.draw(true, true);
+        });
+        document.getElementById('step1').addEventListener("click",function(){
+            graph.runStep(2);
+            // canvas.draw(true, true);
+        });
+        
+    </script>
+</body>
+
+</html>

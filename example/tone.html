@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="../toneJs/Tone.js"></script>
+</head>
+
+<body>
+    <div>
+        <button id="start">start</button>
+        <button id="stop">stop</button>
+        <input id="bpmValue" type="range" min="1" max="300" value="120" class="slider">
+    </div>
+    <script>
+        //建立樂器
+        const kick = new Tone.MembraneSynth({
+            octaves: 3,
+            envelope: {
+                sustain: 0.2
+            }
+        }).toDestination()
+        const tomL = new Tone.MembraneSynth({
+            octaves: 1
+        }).toDestination()
+        const tomM = new Tone.MembraneSynth({
+            octaves: 1
+        }).toDestination()
+        const tomH = new Tone.MembraneSynth({
+            octaves: 1
+        }).toDestination()
+        const hihat = new Tone.NoiseSynth({
+            playbackRate: 5,
+            envelope: {
+                sustain: 0.0001
+            }
+        }).toDestination()
+
+        const poly = new Tone.PolySynth({
+            polyphony: 8,
+            volume: 2,
+            detune: 0,
+            voice: Tone.Synth
+        }, Tone.Synth, {
+            oscillator: {
+                type: 'triangle'
+            },
+            envelope: {
+                attack: 0.001,
+                decay: 0.1,
+                sustain: 0.3,
+                release: 0.02
+            }
+        }).toDestination()
+
+        kick.volume.value = 6
+        hihat.volume.value = -2
+        tomL.volume.value = 0
+        tomM.volume.value = 0
+        tomH.volume.value = 0
+        // poly.set('volume', 2)
+
+        const BPM = 120
+
+        const kicka = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+        const hihata = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1]
+        const tomLa = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1]
+        const tomMa = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1]
+        const tomHa = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1]
+        const lead = [
+            [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
+            [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+        ]
+        let index = 0
+        Tone.Transport.bpm.value = BPM
+        Tone.Transport.scheduleRepeat(time => {
+            index = (index + 1) % 16
+            const i = index
+
+            if (kicka[i]) kick.triggerAttackRelease('C2', '4n', time)
+            if (hihata[i]) hihat.triggerAttackRelease('8n', time)
+            if (tomLa[i]) tomL.triggerAttackRelease('E2', '4n', time)
+            if (tomMa[i]) tomM.triggerAttackRelease('G2', '4n', time)
+            if (tomHa[i]) tomH.triggerAttackRelease('A#2', '4n', time)
+
+            if (lead[0][i]) poly.triggerAttackRelease('C4', '16n', time)
+            if (lead[1][i]) poly.triggerAttackRelease('D4', '16n', time)
+            if (lead[2][i]) poly.triggerAttackRelease('E4', '16n', time)
+            if (lead[3][i]) poly.triggerAttackRelease('F4', '16n', time)
+            if (lead[4][i]) poly.triggerAttackRelease('G4', '16n', time)
+            if (lead[5][i]) poly.triggerAttackRelease('A4', '16n', time)
+            if (lead[6][i]) poly.triggerAttackRelease('C5', '16n', time)
+        }, '16n')
+
+
+
+
+        document.getElementById('start').addEventListener("click", function () {
+            Tone.Transport.start()
+        })
+        document.getElementById('stop').addEventListener("click", function () {
+            Tone.Transport.stop()
+        })
+        document.getElementById('bpmValue').addEventListener("change", function () {
+            Tone.Transport.bpm.value = this.value
+        })
+
+        
+    </script>
+</body>
+
+</html>

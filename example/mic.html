@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script type="text/javascript" src="../toneJs/Tone.js"></script>
+</head>
+
+<body>
+    <button type="button" id="start_btn">Record</button>
+    <button type="button" id="play_btn" disabled>Play</button>
+</body>
+<script>
+    console.clear();
+
+    initialized = false;
+    var mic, recorder, player;
+
+    // bind the interface
+    const recBtn = document.getElementById("start_btn");
+    const playBtn = document.getElementById("play_btn");
+
+    // Disable the rec button if UserMedia is not supported
+    recBtn.disabled = !Tone.UserMedia.supported;
+
+    // Rec / Stop
+    recBtn.addEventListener("click", async () => {
+        Tone.context.resume(); // https://github.com/Tonejs/Tone.js/issues/341
+
+        //   Initlization
+        if (!initialized) {
+            mic = new Tone.UserMedia();
+            recorder = new Tone.Recorder();
+            mic.connect(recorder);
+            mic.open();
+            // mic.close()
+            initialized = true;
+        }
+
+        if (recBtn.innerText == "Stop") {
+            var data = await recorder.stop();
+            var blobUrl = URL.createObjectURL(data);
+            player = new Tone.Player(blobUrl, () => {
+                playBtn.disabled = false;
+            }).toDestination();
+            recBtn.innerText = "Record";
+        } else {
+            recorder.start();
+            recBtn.innerText = "Stop";
+        }
+    });
+
+    // Play / Stop
+    playBtn.addEventListener("click", () => {
+        if (playBtn.innerText == "Stop") {
+            player.stop();
+            playBtn.innerText = "Play";
+        } else {
+            player.start();
+            playBtn.innerText = "Stop";
+        }
+    });
+</script>
+
+</html>
